@@ -553,6 +553,11 @@ class GroupsController < ApplicationController
           membership_request_template
         }
 
+        [:muted, :tracking, :watching, :watching_first_post].each do |level|
+          default_params << { "#{level}_category_ids" => [] }
+          default_params << { "#{level}_tags" => [] }
+        end
+
         if current_user.admin
           default_params.push(*[
             :incoming_email,
