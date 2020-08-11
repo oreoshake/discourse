@@ -603,7 +603,12 @@ RSpec.describe ApplicationController do
 
       get '/'
       script_src = parse(response.headers['Content-Security-Policy'])['script-src']
-      expect(script_src).to include(be_match('nonce'))
+      nonce_source = script_src.find { |cs| cs.match(/nonce/)}
+      expect(nonce_source).to_not be_nil
+      nonce = nonce_source.match(/nonce-(?<nonce>[A-Za-z0-9+\/=]{16,})/)[:nonce]
+      expect(request.env["csp_nonce"]).to eq(nonce)
+
+      # todo assert script tags and link tags have nonces
     end
 
     it 'does not set CSP when responding to non-HTML' do
